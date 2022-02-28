@@ -7,13 +7,21 @@ public class MyPolygons {
     private Node<Polygon> current;
     private int size;
 
+
+    /**
+     * <code>Class</code> constructor
+     **/
     public MyPolygons() {
         sentinel = new Node<Polygon>();
         current = null;
         size = 0;
     }
 
-    public MyPolygons(Polygon... polygons) {
+    /**
+     * <code>Class</code> constructor specifying the initial set of <code>Polygon</code> objects
+     * to be in the list.
+     **/
+    public MyPolygons(final Polygon... polygons) {
         sentinel = new Node<Polygon>();
         size = 0;
         current = null;
@@ -22,57 +30,86 @@ public class MyPolygons {
         }
     }
 
-    public void append(Polygon item) {
-        current = sentinel.getNext();
-        sentinel.setNext(new Node<Polygon>(item));
 
-        if (current != null) {
-            current.setPrev(sentinel.getNext());
-            sentinel.getNext().setNext(current);
-        }
+    /**
+     * Get the size of the list
+     * @return The number of <code>Node</code> objects in the list
+     **/
+    public int getSize() { return size; }
 
-        sentinel.getNext().setPrev(sentinel);
-        reset();
+    /**
+     * Check if the list is empty
+     * @return <code>true</code> if the list is empty<br/>
+     * <code>false</code> if the list has one or more items
+     **/
+    public boolean isEmpty() { return size == 0; }
+
+    /**
+     * Add item to end of list
+     * @param item A <code>Polygon</code> object to be appended to the end of the list
+     **/
+    public void append(final Polygon item) {
+        current = new Node<Polygon>(item, sentinel, sentinel.getPrev());
+        sentinel.getPrev().setNext(current);
+        sentinel.setPrev(current);
         size++;
-    }
-
-    public void prepend(Polygon item) {
-        current = sentinel.getPrev();
-        sentinel.setPrev(new Node<Polygon>(item));
-
-        if (current != null) {
-            current.setNext(sentinel.getPrev());
-            sentinel.getPrev().setPrev(current);
-        }
-
-        sentinel.getPrev().setNext(sentinel);
         reset();
-        size++;
     }
 
-    public void insert(Polygon item) {
-        for (int i = 0; i < size; i++) {
-            if (current.getData().equals(item)) {
-                final Node<Polygon> before = current.getPrev();
-                current.setPrev(new Node<Polygon>(item));
-                before.setNext(current.getPrev());
-                current.getPrev().setPrev(before);
-                current.getPrev().setNext(current);
-                reset();
-                return;
-            }
+    /**
+     * Add item to start of list
+     * @param item <code>Polygon</code> object to be prepended to the list
+     **/
+    public void prepend(final Polygon item) {
+        current = new Node<Polygon>(item, sentinel.getNext(), sentinel);
+        sentinel.getNext().setPrev(current);
+        sentinel.setNext(current);
+        size++;
+        reset();
+    }
+
+//    public void insert(final Polygon item, final Node predecessor, final Node successor) {
+//        Node<Polygon> newNode = new Node<Polygon>(item, predecessor, successor);
+//        predecessor.setNext(newNode);
+//        successor.setPrev(newNode);
+//    }
+
+    /**
+     * Add item before a specified item
+     * @param item A <code>Polygon</code> object to be inserted before the specified item in the list
+     * @param before The <code>Polygon</code> object that will be used to insert the item before it
+     **/
+    public void insert(final Polygon item, final Polygon before) {
+        while (current != sentinel) {
+//            if (current.getData().equals()) {
+//                final  Node<Polygon> newNode = new Node<Polygon>(item, current)
+//            }
         }
     }
 
+    /**
+     *  Step to the next item (updates the <code>current</code> member variable)
+     **/
     public void next() { current = current.getNext(); }
 
+    /**
+     *  Reset the <code>current</code> member variable to the start of the list.
+     **/
     public void reset() { current = sentinel.getNext(); }
 
-    public Polygon remove() {
+    /**
+     *  Remove and return an item from the head of the list.
+     *  @return The payload (or data) of the removed <code>Node</code> object
+     **/
+    public Polygon remove() throws Exception{
+        if (isEmpty()) { throw new Exception("List is empty"); }
+
         final Node<Polygon> removed = sentinel.getNext();
         current = current.getNext();
         current.setPrev(sentinel);
         sentinel.setNext(current);
+        size--;
+
         reset();
         return removed.getData();
     }
