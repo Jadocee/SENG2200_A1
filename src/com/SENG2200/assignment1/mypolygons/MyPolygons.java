@@ -13,6 +13,8 @@ public class MyPolygons {
      **/
     public MyPolygons() {
         sentinel = new Node<Polygon>();
+        sentinel.setNext(sentinel);
+        sentinel.setPrev(sentinel);
         current = null;
         size = 0;
     }
@@ -30,7 +32,6 @@ public class MyPolygons {
         }
     }
 
-
     /**
      * Get the size of the list
      * @return The number of <code>Node</code> objects in the list
@@ -43,6 +44,7 @@ public class MyPolygons {
      * <code>false</code> if the list has one or more items
      **/
     public boolean isEmpty() { return size == 0; }
+
 
     /**
      * Add item to end of list
@@ -68,12 +70,6 @@ public class MyPolygons {
         reset();
     }
 
-//    public void insert(final Polygon item, final Node predecessor, final Node successor) {
-//        Node<Polygon> newNode = new Node<Polygon>(item, predecessor, successor);
-//        predecessor.setNext(newNode);
-//        successor.setPrev(newNode);
-//    }
-
     /**
      * Add item before a specified item
      * @param item A <code>Polygon</code> object to be inserted before the specified item in the list
@@ -81,10 +77,15 @@ public class MyPolygons {
      **/
     public void insert(final Polygon item, final Polygon before) {
         while (current != sentinel) {
-//            if (current.getData().equals()) {
-//                final  Node<Polygon> newNode = new Node<Polygon>(item, current)
-//            }
+            if (current.getNext().getData().equals(before)) {
+                Node<Polygon> newNode = new Node<Polygon>(item, current.getNext(), current);
+                current.getNext().setPrev(newNode);
+                current.setNext(newNode);
+                size++;
+                break;
+            } else next();
         }
+        reset();
     }
 
     /**
@@ -93,7 +94,7 @@ public class MyPolygons {
     public void next() { current = current.getNext(); }
 
     /**
-     *  Reset the <code>current</code> member variable to the start of the list.
+     *  Reset the <code>current</code> member variable to the first item in the list.
      **/
     public void reset() { current = sentinel.getNext(); }
 
@@ -104,13 +105,22 @@ public class MyPolygons {
     public Polygon remove() throws Exception{
         if (isEmpty()) { throw new Exception("List is empty"); }
 
-        final Node<Polygon> removed = sentinel.getNext();
+        final Polygon data = current.getData();
         current = current.getNext();
         current.setPrev(sentinel);
         sentinel.setNext(current);
         size--;
-
         reset();
-        return removed.getData();
+        return data;
+    }
+
+    public String print() {
+        StringBuilder stringBuilder = new StringBuilder();
+        while (current != sentinel) {
+            stringBuilder.append(current.getData().toString() + "\n");
+            next();
+        }
+        reset();
+        return stringBuilder.toString();
     }
 }
